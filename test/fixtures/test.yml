@@ -1,0 +1,9 @@
+fields:
+  name: string
+  age:
+    type: integer
+    greaterThan: 10
+    lessThan: 90
+  email:
+    - required
+    - email

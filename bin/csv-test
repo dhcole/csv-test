@@ -1,0 +1,9 @@
+#!/usr/bin/env node
+
+var fs = require('fs'),
+    path = require('path'),
+    args = process.argv.slice(2),
+    config = fs.readFileSync(path.resolve(process.cwd(), args[0]), 'utf8'),
+    stream = fs.createReadStream(path.resolve(process.cwd(), args[1]), 'utf8');
+
+require('..')(config, stream);

@@ -1,0 +1,30 @@
+{
+  "name": "csv-test",
+  "version": "0.0.0",
+  "description": "A command line application for validating CSV files",
+  "main": "index.js",
+  "bin": "./bin/csv-test",
+  "scripts": {
+    "test": "tape test/*.test.js"
+  },
+  "author": "dhcole",
+  "license": "public domain",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dhcole/csv-test.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dhcole/csv-test/issues"
+  },
+  "dependencies": {
+    "anchor": "^0.10.5",
+    "chalk": "^1.1.0",
+    "csv-parse": "^1.0.0",
+    "js-yaml": "^3.3.1",
+    "lodash": "^3.10.1",
+    "stream-transform": "^0.1.0"
+  },
+  "devDependencies": {
+    "tape": "^4.2.0"
+  }
+}
