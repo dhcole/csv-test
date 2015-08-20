@@ -47,7 +47,7 @@ fields:
   email: isEmail
 ```
 
-Start your configuration file with a `fields` key to define the validation settings for each field. Then specify a key for each field you'd like to validate. The values for each key can either be the name of a data type (string, integer, boolean) or an object specifying additional validations, like ranges or regex match patterns. See below for a full list of validations. Fields that do not have rules specified will be skipped.
+Start your configuration file with a `fields` key to define the validation settings for each field. Then specify a key for each field you'd like to validate. Fields that do not have rules specified will be skipped.
 
 Field validation settings can take a number of forms. For fields with only one rule, they can be strings, such as `age: isInt`.
 
