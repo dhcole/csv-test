@@ -1,0 +1,10 @@
+fields:
+  id:
+    - startsWith: n
+    - isLength: 1
+  cost: isInt
+  fees: isInt
+  sum:
+    - sumFields:
+        - cost
+        - fees

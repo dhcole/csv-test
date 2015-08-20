@@ -19,7 +19,7 @@ npm install -g csv-test
 Run the `csv-test` command by passing it a configuration file and a CSV file:
 
 ```sh
-$ csv-test path/to/config.yml path/to/data.csv
+csv-test path/to/config.yml path/to/data.csv
 ```
 
 You will see output about your tests that looks like this:
@@ -132,6 +132,45 @@ The configuration file also supports a `settings` key at the top level, which wi
 [ISIN]: https://en.wikipedia.org/wiki/International_Securities_Identification_Number
 
 source: [validator.js documentation](https://github.com/chriso/validator.js/blob/master/README.md#validators)
+
+### custom validators
+
+You can test against custom validators by defining your own validation functions in a file passed as a third argument: `csv-test path/to/config.yml path/to/data.csv path/to/customValidators.js`
+
+Your custom validators file should export an object with keys as validator names and values as functions. The functions take the string of the test value as the first argument and any subsequent options specified in the configuration file as additional arguments. They also have the field name, field value, and row for the test set to the context object. Access them in the validation function with `this.field`, `this.value`, and `this.row`.
+
+An example file of custom validators might look like this:
+
+```js
+module.exports = {
+  startsWith: function(str, seed) {
+    return str.indexOf(seed) === 0;
+  },
+  sumFields: function(str) {
+    var cols = Array.prototype.slice.call(arguments);
+    cols.shift();
+    var sum = cols.reduce(function(memo, col) {
+      return memo + +this.row[col];
+    }, 0);
+    return sum === +str;
+  }
+};
+```
+
+And these rules would be used in a configuration file like this:
+
+```yml
+fields:
+  id:
+    - startsWith: n
+    - isLength: 1
+  cost: isInt
+  fees: isInt
+  sum:
+    - sumFields:
+        - cost
+        - fees
+```
 
 ## public domain
 

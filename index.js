@@ -5,7 +5,7 @@ var _ = require('lodash'),
     validator = require('validator'),
     transform = require('stream-transform');
 
-module.exports = function(yml, stream) {
+module.exports = function(yml, stream, validators) {
 
   var index = 0,
       errorCount = 0,
@@ -13,6 +13,8 @@ module.exports = function(yml, stream) {
       settings = _.extend({ columns: true }, config.settings),
       parser = parse(settings),
       transformer = transform(testRow);
+
+  if (validators && _.isObject(validators)) addValidators(validators);
 
   stream.pipe(parser).pipe(transformer);
   stream.on('end', finish);
@@ -72,6 +74,12 @@ module.exports = function(yml, stream) {
       console.log(chalk.green('no errors found'));
       process.exit(0);
     }
+  }
+
+  function addValidators(validators) {
+    _.each(validators, function(func, key) {
+      validator.extend(key, func);
+    });
   }
 
 };
