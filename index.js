@@ -29,6 +29,7 @@ module.exports = function(yml, stream) {
     var fieldIndex = '✗ [row ' + index + ', field ' + field + '] ',
         rules = config.fields[field],
         output = [];
+    if (!rules) return;
     rules = typeof rules !== 'object' ? [{ type: rules }] :
             _.isArray(rules) ? rules.map(function(r) { return { type: r }; }) :
             [rules];
