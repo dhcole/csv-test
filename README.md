@@ -25,7 +25,7 @@ $ csv-test path/to/config.yml path/to/data.csv
 You will see output about your tests that looks like this:
 
 ```sh
-✗ [row 1, field email] should be a email (instead of "daveexample.com", which is a string)
+✗ [row 2, field email] `isEmail` failed.
 2 rows tested
 1 error found
 ```
@@ -36,87 +36,102 @@ You will see output about your tests that looks like this:
 
 ```yml
 fields:
-  name: string
+  name:
+    - isLength:
+      - 1
+      - 10
   age:
-    type: integer
-    greaterThan: 10
-    lessThan: 90
-  email:
-    - required
-    - email
+    - isInt:
+        max: 90
+        min: 10
+  email: isEmail
 ```
 
 Start your configuration file with a `fields` key to define the validation settings for each field. Then specify a key for each field you'd like to validate. The values for each key can either be the name of a data type (string, integer, boolean) or an object specifying additional validations, like ranges or regex match patterns. See below for a full list of validations. Fields that do not have rules specified will be skipped.
+
+Field validation settings can take a number of forms. For fields with only one rule, they can be strings, such as `age: isInt`.
+
+For fields with multiple rules or rules that take named options, use the array form:
+
+```yaml
+age:
+  - isNumeric
+  - isInt:
+      max: 90
+      min: 10
+```
+
+Some rules take options as an array, such as `isLength`. Those rules should list options as an array:
+
+```yml
+name:
+  - isLength:
+    - 1
+    - 10
+```
+
+Rules that only take one option can be written as follows:
+
+```yml
+state:
+  contains: NJ
+```
 
 The configuration file also supports a `settings` key at the top level, which will configure how the CSV file should be parsed. For instance, `delimiter: ";"` tells the parser to parse on semicolons instead of commas. See the [node-csv-parse documentation](http://csv.adaltas.com/parse/#parser-options) for all available parse options.
 
 ## validation options
 
-`csv-test` uses the [anchor](https://github.com/balderdashy/anchor/) library for validating data. Available validation rules include the following (though not all have been tested yet):
+`csv-test` uses the [validator.js](https://github.com/chriso/validator.js) library for validating data. Available validation rules include the following:
 
-| Name of validator | What does it check? | Notes on usage |
-|-------------------|---------------------|----------------|
-|after| check if `string` date in this record is after the specified `Date` | must be valid javascript `Date` |
-|alpha| check if `string` in this record contains only letters (a-zA-Z) | |
-|alphadashed|| does this `string` contain only letters and/or dashes? |
-|alphanumeric| check if `string` in this record contains only letters and numbers. | |
-|alphanumericdashed| does this `string` contain only numbers and/or letters and/or dashes? | |
-|array| is this a valid javascript `array` object? | strings formatted as arrays won't pass |
-|before| check if `string` in this record is a date that's before the specified date | |
-|binary| is this binary data? | If it's a string, it will always pass |
-|boolean| is this a valid javascript `boolean` ? | `string`s will fail |
-|contains| check if `string` in this record contains the seed | |
-|creditcard| check if `string` in this record is a credit card | |
-|date| check if `string` in this record is a date | takes both strings and javascript |
-|datetime| check if `string` in this record looks like a javascript `datetime`| |
-|decimal| | contains a decimal or is less than 1?|
-|email| check if `string` in this record looks like an email address | |
-|empty| Arrays, strings, or arguments objects with a length of 0 and objects with no own enumerable properties are considered "empty" | lo-dash _.isEmpty() |
-|equals| check if `string` in this record is equal to the specified value | `===` ! They must match in both value and type |
-|falsey| Would a Javascript engine register a value of `false` on this? | |
-|finite| Checks if given value is, or can be coerced to, a finite number | This is not the same as native isFinite which will return true for booleans and empty strings |
-|float| check if `string` in this record is of the number type float | |
-|hexadecimal| check if `string` in this record is a hexadecimal number | |
-|hexColor| check if `string` in this record is a hexadecimal color | |
-|in| check if `string` in this record is in the specified array of allowed `string` values | |
-|int|check if `string` in this record is an integer | |
-|integer| same as above | Im not sure why there are two of these. |
-|ip| check if `string` in this record is a valid IP (v4 or v6) | |
-|ipv4| check if `string` in this record is a valid IP v4 | |
-|ipv6| check if `string` in this record is aa valid IP v6 | |
-|is| | something to do with REGEX|
-|json| does a try&catch to check for valid JSON. | |
-|len| is `integer` > param1 && < param2 | Where are params defined? |
-|lowercase| is this string in all lowercase? | |
-|max| | |
-|maxLength| is `integer` > 0 && < param2 |  |
-|min| | |
-|minLength| | |
-|not| | Something about regexes |
-|notContains| | |
-|notEmpty| |  |
-|notIn| does the value of this model attribute exist inside of the defined validator value (of the same type) | Takes strings and arrays |
-|notNull| does this not have a value of `null` ? | |
-|notRegex| | |
-|null| check if `string` in this record is null | |
-|number| is this a number? | NaN is considered a number |
-|numeric| checks if `string` in this record contains only numbers | |
-|object| checks if this attribute is the language type of Object | Passes for arrays, functions, objects, regexes, new Number(0), and new String('') ! |
-|regex| | |
-|protected| Should this attribute be removed when `toJSON` is called on a model instance?  | |
-|required| Must this model attribute contain valid data before a new record can be created? | |
-|string| is this a `string` ?| |
-|text| okay, well is <i>this</i> a `string` ?| |
-|truthy| Would a Javascript engine register a value of `false` on this? | |
-|undefined| Would a javascript engine register this thing as have the value 'undefined' ? | |
-|unique| Checks to see if a new record model attribute is unique.  | |
-|uppercase| checks if `string` in this record is uppercase | |
-|url| checks if `string` in this record is a URL | |
-|urlish| Does the `string` in this record contain something that looks like a route, ending with a file extension? | /^\s([^\/]+\.)+.+\s*$/g |
-|uuid| checks if `string` in this record is a UUID (v3, v4, or v5) | |
-|uuidv3| checks if `string` in this record is a UUID (v3) | |
-|uuidv4| checks if `string` in this record is a UUID (v4) | |
-source: [Sails.js documentation](https://github.com/balderdashy/sails-docs/blob/master/concepts/ORM/Validations.md)
+### Validators
+
+- **contains(str, seed)** - check if the string contains the seed.
+- **equals(str, comparison)** - check if the string matches the comparison.
+- **isAfter(str [, date])** - check if the string is a date that's after the specified date (defaults to now).
+- **isAlpha(str)** - check if the string contains only letters (a-zA-Z).
+- **isAlphanumeric(str)** - check if the string contains only letters and numbers.
+- **isAscii(str)** - check if the string contains ASCII chars only.
+- **isBase64(str)** - check if a string is base64 encoded.
+- **isBefore(str [, date])** - check if the string is a date that's before the specified date.
+- **isBoolean(str)** - check if a string is a boolean.
+- **isByteLength(str, min [, max])** - check if the string's length (in bytes) falls in a range.
+- **isCreditCard(str)** - check if the string is a credit card.
+- **isCurrency(str, options)** - check if the string is a valid currency amount. `options` is an object which defaults to `{symbol: '$', require_symbol: false, allow_space_after_symbol: false, symbol_after_digits: false, allow_negatives: true, parens_for_negatives: false, negative_sign_before_digits: false, negative_sign_after_digits: false, allow_negative_sign_placeholder: false, thousands_separator: ',', decimal_separator: '.', allow_space_after_digits: false }`.
+- **isDate(str)** - check if the string is a date.
+- **isDecimal(str)** - check if the string represents a decimal number, such as 0.1, .3, 1.1, 1.00003, 4.0, etc.
+- **isDivisibleBy(str, number)** - check if the string is a number that's divisible by another.
+- **isEmail(str [, options])** - check if the string is an email. `options` is an object which defaults to `{ allow_display_name: false, allow_utf8_local_part: true, require_tld: true }`. If `allow_display_name` is set to true, the validator will also match `Display Name <email-address>`. If `allow_utf8_local_part` is set to false, the validator will not allow any non-English UTF8 character in email address' local part. If `require_tld` is set to false, e-mail addresses without having TLD in their domain will also be matched.
+- **isFQDN(str [, options])** - check if the string is a fully qualified domain name (e.g. domain.com). `options` is an object which defaults to `{ require_tld: true, allow_underscores: false, allow_trailing_dot: false }`.
+- **isFloat(str [, options])** - check if the string is a float. `options` is an object which can contain the keys `min` and/or `max` to validate the float is within boundaries (e.g. `{ min: 7.22, max: 9.55 }`).
+- **isFullWidth(str)** - check if the string contains any full-width chars.
+- **isHalfWidth(str)** - check if the string contains any half-width chars.
+- **isHexColor(str)** - check if the string is a hexadecimal color.
+- **isHexadecimal(str)** - check if the string is a hexadecimal number.
+- **isIP(str [, version])** - check if the string is an IP (version 4 or 6).
+- **isISBN(str [, version])** - check if the string is an ISBN (version 10 or 13).
+- **isISIN(str)** - check if the string is an [ISIN][ISIN] (stock/security identifier).
+- **isISO8601(str)** - check if the string is a valid [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) date.
+- **isIn(str, values)** - check if the string is in a array of allowed values.
+- **isInt(str [, options])** - check if the string is an integer. `options` is an object which can contain the keys `min` and/or `max` to check the integer is within boundaries (e.g. `{ min: 10, max: 99 }`).
+- **isJSON(str)** - check if the string is valid JSON (note: uses JSON.parse).
+- **isLength(str, min [, max])** - check if the string's length falls in a range. Note: this function takes into account surrogate pairs.
+- **isLowercase(str)** - check if the string is lowercase.
+- **isMobilePhone(str, locale)** - check if the string is a mobile phone number, (locale is one of `['zh-CN', 'en-ZA', 'en-AU', 'en-HK', 'pt-PT', 'fr-FR', 'el-GR', 'en-GB', 'en-US', 'en-ZM', 'ru-RU']`).
+- **isMongoId(str)** - check if the string is a valid hex-encoded representation of a [MongoDB ObjectId][mongoid].
+- **isMultibyte(str)** - check if the string contains one or more multibyte chars.
+- **isNull(str)** - check if the string is null.
+- **isNumeric(str)** - check if the string contains only numbers.
+- **isSurrogatePair(str)** - check if the string contains any surrogate pairs chars.
+- **isURL(str [, options])** - check if the string is an URL. `options` is an object which defaults to `{ protocols: ['http','https','ftp'], require_tld: true, require_protocol: false, require_valid_protocol: true, allow_underscores: false, host_whitelist: false, host_blacklist: false, allow_trailing_dot: false, allow_protocol_relative_urls: false }`.
+- **isUUID(str [, version])** - check if the string is a UUID (version 3, 4 or 5).
+- **isUppercase(str)** - check if the string is uppercase.
+- **isVariableWidth(str)** - check if the string contains a mixture of full and half-width chars.
+- **matches(str, pattern [, modifiers])** - check if string matches the pattern. For example: `matches('foo', 'foo', 'i')`.
+
+[mongoid]: http://docs.mongodb.org/manual/reference/object-id/
+[ISIN]: https://en.wikipedia.org/wiki/International_Securities_Identification_Number
+
+source: [validator.js documentation](https://github.com/chriso/validator.js/blob/master/README.md#validators)
 
 ## public domain
 

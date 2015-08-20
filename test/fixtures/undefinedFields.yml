@@ -1,6 +1,6 @@
 fields:
-  name: string
-  age:
-    type: integer
-    greaterThan: 10
-    lessThan: 90
+  name:
+    - isLength:
+      - 1
+      - 10
+  email: isEmail

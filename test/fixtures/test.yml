@@ -1,9 +1,10 @@
 fields:
-  name: string
+  name:
+    - isLength:
+      - 1
+      - 10
   age:
-    type: integer
-    greaterThan: 10
-    lessThan: 90
-  email:
-    - required
-    - email
+    - isInt:
+      max: 90
+      min: 10
+  email: isEmail
