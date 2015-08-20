@@ -46,7 +46,7 @@ fields:
     - email
 ```
 
-Start your configuration file with a `fields` key to define the validation settings for each field. Then specify a key for each field you'd like to validate. The values for each key can either be the name of a data type (string, integer, boolean) or an object specifying additional validations, like ranges or regex match patterns. See below for a full list of validations.
+Start your configuration file with a `fields` key to define the validation settings for each field. Then specify a key for each field you'd like to validate. The values for each key can either be the name of a data type (string, integer, boolean) or an object specifying additional validations, like ranges or regex match patterns. See below for a full list of validations. Fields that do not have rules specified will be skipped.
 
 The configuration file also supports a `settings` key at the top level, which will configure how the CSV file should be parsed. For instance, `delimiter: ";"` tells the parser to parse on semicolons instead of commas. See the [node-csv-parse documentation](http://csv.adaltas.com/parse/#parser-options) for all available parse options.
 
