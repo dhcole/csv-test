@@ -1,4 +1,4 @@
-# csv-test
+# csv-test [![Build Status](https://travis-ci.org/dhcole/csv-test.svg)](https://travis-ci.org/dhcole/csv-test)
 
 A command line application for validating CSV files. Use it for verifying that data files meet defined criteria, like "`age` is a number and greater than 10" or "`email` is a valid email address".
 
