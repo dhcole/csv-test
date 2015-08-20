@@ -1,6 +1,6 @@
 {
   "name": "csv-test",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "A command line application for validating CSV files",
   "main": "index.js",
   "bin": "./bin/csv-test",
